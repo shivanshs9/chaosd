@@ -188,10 +188,11 @@ func (s *Server) applyTC(attack *core.NetworkCommand, ipset string, uid string) 
 }
 
 func (networkAttack) Recover(exp core.Experiment, env Environment) error {
-	attack := &core.NetworkCommand{}
-	if err := json.Unmarshal([]byte(exp.RecoverCommand), attack); err != nil {
+	config, err := exp.GetRequestCommand()
+	if err != nil {
 		return err
 	}
+	attack := config.(*core.NetworkCommand)
 	if attack.NeedApplyIPSet() {
 		if err := env.Chaos.recoverIPSet(env.AttackUid); err != nil {
 			return errors.WithStack(err)
